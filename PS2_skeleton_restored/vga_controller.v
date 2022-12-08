@@ -20,7 +20,8 @@ output [7:0] r_data;
 reg [18:0] ADDR;
 reg [23:0] bgr_data;
 wire VGA_CLK_n;
-wire [7:0] index;
+wire [7:0] img_index;
+reg[7:0] index;
 wire [23:0] bgr_data_raw;
 wire cBLANK_n,cHS,cVS,rst;
 ////
@@ -44,14 +45,36 @@ end
 //////////////////////////
 //////INDEX addr.
 assign VGA_CLK_n = ~iVGA_CLK;
-img_data	img_data_inst (
+
+
+//img_data	img_data_inst (
+//	.address ( ADDR ),
+//	.clock ( VGA_CLK_n ),
+//	.q ( img_index )
+//	);
+
+pdmem pdmem_inst (
 	.address ( ADDR ),
-	.clock ( VGA_CLK_n ),
-	.q ( index )
+	.clock (VGA_CLK_n),
+	.data (32'd0),
+	.wren (1'b0),
+	.q (im_index)
 	);
 	
 /////////////////////////
 //////Add switch-input logic here
+
+integer counter = 20;
+integer snake_start = 10000;
+
+always	
+	begin
+		if(ADDR > (snake_start - counter) && ADDR < snake_start)
+			index <=8'd5;
+		else
+			index <=img_index;
+	end
+
 	
 //////Color table output
 img_index	img_index_inst (
